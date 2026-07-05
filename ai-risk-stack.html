@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The AI Risk Stack, A short paper by Jacintah Mumbe Kimeu</title>
+<meta name="description" content="Three case studies in AI failure, and what they reveal about how we govern AI. Apple Card, Zillow Offers, and the Dutch childcare benefits scandal, mapped to ISO/IEC 42001 and the EU AI Act.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #FFFFFF;
+    --bg-card: #F7F5F2;
+    --bg-hover: #F0EDE8;
+    --text: #1A1714;
+    --text-muted: #5C5852;
+    --text-dim: #C5C0BA;
+    --accent: #C47B1A;
+    --accent-dim: rgba(196, 123, 26, 0.10);
+    --border: #E8E4DF;
+    --border-light: #D8D3CC;
+    --serif: 'Playfair Display', Georgia, serif;
+    --sans: 'DM Sans', sans-serif;
+    --mono: 'DM Mono', monospace;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 17px;
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection { background: var(--accent); color: #fff; }
+
+  a { color: var(--accent); text-decoration: none; border-bottom: 1px solid rgba(196,123,26,0.3); transition: border-color 0.2s; }
+  a:hover { border-bottom-color: var(--accent); }
+
+  /* Top bar */
+  .topbar {
+    padding: 1.4rem 3rem;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.85rem;
+  }
+
+  .topbar-logo {
+    font-family: var(--serif);
+    font-weight: 700;
+    color: var(--text);
+    border: none;
+    letter-spacing: 0.04em;
+  }
+
+  .back-link {
+    color: var(--text-muted);
+    border: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    letter-spacing: 0.03em;
+  }
+  .back-link::before { content: '←'; transition: transform 0.2s; }
+  .back-link:hover { color: var(--text); }
+  .back-link:hover::before { transform: translateX(-3px); }
+
+  /* Article */
+  article {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 5rem 2rem 6rem;
+  }
+
+  .paper-meta {
+    font-size: 0.78rem;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 1.5rem;
+  }
+
+  .paper-title {
+    font-family: var(--serif);
+    font-size: clamp(2.4rem, 5vw, 4rem);
+    font-weight: 900;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    color: var(--text);
+    margin-bottom: 1.5rem;
+  }
+
+  .paper-subtitle {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 1.35rem;
+    color: var(--text-muted);
+    font-weight: 400;
+    line-height: 1.4;
+    margin-bottom: 2.5rem;
+  }
+
+  .paper-dek {
+    font-size: 1.05rem;
+    color: var(--text);
+    line-height: 1.6;
+    margin-bottom: 2rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .byline {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 1.25rem 0;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 4rem;
+    font-size: 0.88rem;
+    color: var(--text-muted);
+  }
+
+  .byline-name { color: var(--text); font-weight: 500; }
+  .byline-mono { font-family: var(--mono); font-size: 0.78rem; letter-spacing: 0.05em; }
+  .byline-sep { color: var(--text-dim); }
+
+  /* Article body */
+  article h2 {
+    font-family: var(--serif);
+    font-size: 2rem;
+    font-weight: 700;
+    line-height: 1.15;
+    margin: 4rem 0 1.5rem;
+    letter-spacing: -0.01em;
+  }
+
+  article h3 {
+    font-family: var(--serif);
+    font-size: 1.35rem;
+    font-weight: 700;
+    line-height: 1.3;
+    margin: 2.5rem 0 1rem;
+    color: var(--text);
+  }
+
+  article h4 {
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin: 2rem 0 0.75rem;
+  }
+
+  article p {
+    margin-bottom: 1.4rem;
+    color: var(--text);
+    font-size: 1.05rem;
+  }
+
+  article ul, article ol {
+    margin: 0 0 1.5rem 1.5rem;
+    color: var(--text);
+  }
+
+  article li {
+    margin-bottom: 0.8rem;
+    padding-left: 0.5rem;
+    line-height: 1.7;
+  }
+
+  article strong {
+    color: var(--text);
+    font-weight: 500;
+  }
+
+  /* Pull quote / blockquote */
+  blockquote {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 1.4rem;
+    line-height: 1.4;
+    color: var(--text);
+    margin: 2.5rem 0;
+    padding: 1.5rem 0 1.5rem 2rem;
+    border-left: 3px solid var(--accent);
+  }
+
+  /* Layer callout boxes */
+  .layer-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: 2px;
+    padding: 1.5rem 1.75rem;
+    margin: 2rem 0;
+  }
+
+  .layer-card .layer-num {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    color: var(--accent);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }
+
+  .layer-card h3 {
+    font-size: 1.15rem;
+    margin: 0 0 0.75rem;
+  }
+
+  .layer-card p {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    margin: 0;
+  }
+
+  /* Question callouts */
+  .q-callout {
+    background: var(--bg-card);
+    border-radius: 2px;
+    padding: 1.75rem 2rem;
+    margin: 2rem 0;
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 1.2rem;
+    line-height: 1.4;
+    color: var(--text);
+    position: relative;
+  }
+
+  .q-callout::before {
+    content: 'Q';
+    position: absolute;
+    top: 1rem;
+    right: 1.5rem;
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    color: var(--accent);
+    font-style: normal;
+  }
+
+  /* Tables */
+  .paper-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 2rem 0;
+    font-size: 0.92rem;
+  }
+
+  .paper-table th {
+    text-align: left;
+    padding: 0.9rem 1rem;
+    background: var(--bg-card);
+    font-family: var(--sans);
+    font-weight: 500;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .paper-table td {
+    padding: 1rem;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+    line-height: 1.6;
+  }
+
+  .paper-table td:first-child {
+    font-weight: 500;
+    color: var(--text);
+    width: 30%;
+  }
+
+  .paper-table td:last-child { color: var(--text-muted); }
+
+  /* Layer separator badge */
+  .layer-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.4rem 0.9rem;
+    background: var(--accent-dim);
+    color: var(--accent);
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    border-radius: 1px;
+    margin-bottom: 1rem;
+  }
+
+  /* Impact / risk summary lists */
+  .risk-item {
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .risk-item:last-child { border-bottom: none; }
+
+  .risk-item h4 {
+    color: var(--text);
+    text-transform: none;
+    letter-spacing: 0;
+    font-size: 1.02rem;
+    font-weight: 500;
+    margin: 0 0 0.5rem;
+    font-family: var(--sans);
+  }
+
+  .risk-item p { font-size: 0.98rem; margin: 0; color: var(--text-muted); }
+
+  /* Callout for Article 27 */
+  .article-27 {
+    background: linear-gradient(135deg, rgba(196,123,26,0.08), rgba(196,123,26,0.03));
+    border: 1px solid rgba(196,123,26,0.25);
+    border-radius: 2px;
+    padding: 2rem;
+    margin: 3rem 0;
+    text-align: center;
+  }
+
+  .article-27-label {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    color: var(--accent);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 0.75rem;
+  }
+
+  .article-27 p {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 1.25rem;
+    color: var(--text);
+    line-height: 1.4;
+    margin: 0;
+    max-width: 42ch;
+    margin: 0 auto;
+  }
+
+  /* Section divider */
+  hr.section-divider {
+    border: none;
+    text-align: center;
+    margin: 5rem 0 3rem;
+    font-family: var(--serif);
+    color: var(--text-dim);
+  }
+  hr.section-divider::after {
+    content: '§ § §';
+    letter-spacing: 0.8rem;
+    font-size: 0.9rem;
+  }
+
+  /* Author bio */
+  .author-bio {
+    margin-top: 5rem;
+    padding: 2rem;
+    background: var(--bg-card);
+    border-radius: 2px;
+    border-left: 3px solid var(--accent);
+  }
+
+  .author-bio h3 {
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin: 0 0 1rem;
+    font-family: var(--sans);
+  }
+
+  .author-bio p {
+    font-size: 0.96rem;
+    color: var(--text-muted);
+    line-height: 1.7;
+    margin-bottom: 1rem;
+  }
+
+  /* Footer */
+  footer {
+    padding: 2rem 3rem;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    max-width: 100%;
+  }
+
+  footer a { border: none; color: var(--text-muted); }
+  footer a:hover { color: var(--text); }
+
+  .footer-links { display: flex; gap: 1.5rem; }
+
+  /* Responsive */
+  @media (max-width: 720px) {
+    .topbar { padding: 1rem 1.25rem; flex-direction: column; gap: 0.5rem; align-items: flex-start; }
+    article { padding: 3rem 1.25rem 4rem; }
+    .byline { flex-wrap: wrap; gap: 0.75rem; }
+    .byline-sep { display: none; }
+    article h2 { font-size: 1.6rem; margin: 3rem 0 1.25rem; }
+    article h3 { font-size: 1.2rem; }
+    blockquote { font-size: 1.15rem; padding-left: 1.25rem; }
+    .q-callout { font-size: 1.05rem; padding: 1.25rem 1.5rem; }
+    .paper-table td:first-child { width: 40%; }
+    footer { flex-direction: column; gap: 1rem; text-align: center; padding: 2rem 1.25rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a href="./index.html" class="topbar-logo">JMK</a>
+  <a href="./index.html#case-studies" class="back-link">Back to portfolio</a>
+</div>
+
+<article>
+
+  <p class="paper-meta">Case Study 01 · First Edition, July 2026</p>
+  <h1 class="paper-title">The AI Risk Stack</h1>
+  <p class="paper-subtitle">Three case studies in AI failure, and what they reveal about how we govern AI.</p>
+  <p class="paper-dek">Apple Card, Zillow Offers, and the Dutch childcare benefits scandal (Toeslagenaffaire), mapped to ISO/IEC 42001 and the EU AI Act.</p>
+
+  <div class="byline">
+    <span class="byline-name">Jacintah Mumbe Kimeu</span>
+    <span class="byline-sep">·</span>
+    <span class="byline-mono">A short paper</span>
+    <span class="byline-sep">·</span>
+    <span class="byline-mono">15 min read</span>
+  </div>
+
+  <h2>Executive summary</h2>
+  <p>This paper argues that the AI governance field is looking for AI risk in the wrong place. Most frameworks focus on the model itself, its bias, its accuracy, its explainability. Yet the three most consequential AI failures of the past decade did not fail primarily at the level of the model. They failed at deeper structural layers that most governance conversations barely reach.</p>
+  <p>Apple Card was cleared of unlawful discrimination by the New York Department of Financial Services after a review of 400,000 applications. Zillow's home-price model was reported to be 96% accurate nationally. The Dutch tax administration's fraud-detection algorithm worked exactly as designed. All three produced serious harm anyway. All three failed differently.</p>
+  <p>By examining the three cases side by side, this paper proposes a simple, memorable framework, <strong>the AI Risk Stack</strong>. It has three layers: risk inside the model, risk around the model, and risk in the design of the model itself. The framework is then mapped to specific clauses of ISO/IEC 42001 and specific articles of the EU AI Act, with particular attention to Article 27 (Fundamental Rights Impact Assessment), which enters into force on 2 August 2026.</p>
+  <p>The paper closes with three practical questions any AI committee, AI ethics function, or product team can bring into its next AI review.</p>
+
+  <h2>Introduction, why another AI risk framework?</h2>
+  <p>The public conversation about AI risk is dominated by two words: <em>bias</em> and <em>hallucination</em>. Both are real. Both are important. But taken together, they still cover only a fraction of the ways AI systems have gone wrong in production over the last decade.</p>
+  <p>Between roughly 2019 and 2021, three AI-related failures reached a level of public consequence that most governance-relevant incidents never reach. Apple Card's credit-limit algorithm triggered a New York regulatory investigation and became a global reference point for AI bias. Zillow's Zestimate-derived home-price model produced roughly $900 million in write-downs, ended a business unit, and led to layoffs of about 25% of Zillow's workforce. The Dutch tax administration's childcare-benefits fraud-detection algorithm wrongly accused approximately 26,000 families, resulted in more than 1,600 children being removed from their families, and ultimately brought down the Rutte cabinet.</p>
+  <p>These three cases are almost never discussed together. When they are, they are usually flattened into a single lesson: "AI can be biased." That framing is not just incomplete. It is misleading. The three cases failed in structurally different ways, at different layers of the AI system, and the governance responses required for each layer are also different.</p>
+  <p>This paper reads all three cases together, extracts the pattern, and gives it a name. The framework is called <strong>the AI Risk Stack</strong>.</p>
+
+  <h2>The AI Risk Stack</h2>
+  <p>AI risk lives in three distinct places. Any given AI system carries risk in one, two, or all three of them simultaneously. Confusing which layer a risk lives in is one of the most common failure modes in AI governance work, because the mitigation for each layer is different.</p>
+
+  <div class="layer-card">
+    <div class="layer-num">Layer 1</div>
+    <h3>Risk inside the model</h3>
+    <p>Bias, fairness, explainability, accuracy. Is the model doing what we think it is doing?</p>
+  </div>
+
+  <div class="layer-card">
+    <div class="layer-num">Layer 2</div>
+    <h3>Risk around the model</h3>
+    <p>Drift, monitoring, human override, deployment context, scale. Is the system around the model catching what the model misses?</p>
+  </div>
+
+  <div class="layer-card">
+    <div class="layer-num">Layer 3</div>
+    <h3>Risk in the design itself</h3>
+    <p>The choice to build the model this way, for this decision, with this data, in this context. Should this model exist in this form at all?</p>
+  </div>
+
+  <blockquote>The layers we are least prepared for are the ones most likely to hurt us.</blockquote>
+
+  <p>Most AI governance work today happens at Layer 1. Some at Layer 2. Almost none at Layer 3. But as the three case studies in this paper show, the worst AI failures in history did not happen at Layer 1. They happened at Layers 2 and 3. Each of the three sections that follows takes one anchor case study and uses it to make each layer concrete.</p>
+
+  <hr class="section-divider">
+
+  <span class="layer-badge">Layer 1</span>
+  <h2>Risk inside the model</h2>
+  <p>Layer 1 is where the AI ethics field has focused most of its attention. It is the layer of the model's internal properties: what features it uses, how it weights them, what its accuracy and false-positive rates look like across different groups, and whether its outputs can be explained.</p>
+
+  <div class="q-callout">Is the model doing what we think it is doing?</div>
+
+  <h4>What Layer 1 risks look like</h4>
+  <ul>
+    <li><strong>Bias,</strong> in the fairness and disparate-impact sense. Model outputs differ across groups in ways that are ethically or legally significant.</li>
+    <li><strong>Explainability gaps.</strong> The model produces decisions that no human, including its developers, can meaningfully justify.</li>
+    <li><strong>Accuracy overstatement.</strong> Aggregate accuracy conceals catastrophic failure on particular subpopulations or edge cases.</li>
+    <li><strong>Feature choice errors.</strong> The model uses inputs that are legally protected, ethically problematic, or serve as proxies for either.</li>
+  </ul>
+
+  <h3>The anchor case, Apple Card</h3>
+  <p>Apple Card is the canonical Layer 1 case study. The complaint was Layer 1 in nature: does the algorithm treat men and women differently? The investigation was Layer 1 in nature: NYDFS reviewed 400,000 applications for evidence of unlawful discrimination. Crucially, the finding was also Layer 1 in nature: no unlawful discrimination was found.</p>
+  <p>The Apple Card case is therefore a Layer 1 success and a Layer 2 failure. The model was defensible. The system around the model, especially the customer-service response, the appeal process, and the ability to explain individual decisions, was not. This is the pattern to watch for. Layer 1 clean bill of health does not resolve the case if Layer 2 is broken.</p>
+
+  <hr class="section-divider">
+
+  <span class="layer-badge">Layer 2</span>
+  <h2>Risk around the model</h2>
+  <p>Layer 2 is the operational envelope surrounding the model in production. It is where AI ops now live, and where the discipline is maturing fastest, driven by the growing recognition that most AI incidents in the wild happen not because the model is wrong but because the environment the model is operating in has changed, or because the safeguards around it have failed.</p>
+
+  <div class="q-callout">Is the system around the model catching what the model misses?</div>
+
+  <h4>What Layer 2 risks look like</h4>
+  <ul>
+    <li><strong>Concept drift.</strong> The model performs well in the world it was trained in, and progressively worse in the world it is now deployed in.</li>
+    <li><strong>Missing monitoring.</strong> The organization has no early-warning system for performance degradation, so the failure only becomes visible after material damage.</li>
+    <li><strong>Broken human override.</strong> Either no human can override the model, or humans override it in ways that make the outcomes worse rather than better.</li>
+    <li><strong>Scale before validation.</strong> The organization deploys at a speed that outpaces its ability to detect errors, so small modelling problems become large business problems.</li>
+    <li><strong>Missing fallback.</strong> When the model fails, there is no manual process to fall back to. The model is not a component of the business; the model is the business.</li>
+  </ul>
+
+  <h3>The anchor case, Zillow Offers</h3>
+  <p>Zillow Offers is the textbook Layer 2 case. The Zestimate algorithm, by Zillow's own account, remained roughly 96% accurate nationally and closer to 99% on homes listed for sale. This is a strong Layer 1 outcome. What failed was everything around the model. The organization kept buying homes even as the market began to cool, because there was no effective mechanism to detect the drift in real time. Executives adjusted the algorithm's outputs upward to increase conversion rates. Aggressive scaling turned a small pricing error into a $900 million write-down. And when the model failed, there was no business to fall back on, because the entire iBuying unit had been built around it.</p>
+  <p>The Layer 2 lesson from Zillow is that model accuracy in isolation is not the same as model safety in production. The safety of the system is a property of the whole envelope, not of the model alone.</p>
+
+  <hr class="section-divider">
+
+  <span class="layer-badge">Layer 3</span>
+  <h2>Risk in the design itself</h2>
+  <p>Layer 3 is the layer that almost no governance framework in current common use addresses. Layer 3 is not a technical question. It is a values and power question. It asks whether the system should have been built at all, in this form, for this purpose, with this data, and with the power the deployer holds over the people the system will be applied to.</p>
+
+  <div class="q-callout">If the model works exactly as designed, would we still be comfortable with the outcomes?</div>
+
+  <h4>What Layer 3 risks look like</h4>
+  <ul>
+    <li><strong>Protected attributes as features.</strong> Race, ethnicity, nationality, gender, or religion used directly as model inputs for consequential decisions.</li>
+    <li><strong>Proxy attributes.</strong> Postal codes, surnames, or other variables that correlate strongly with protected attributes, used to reach the same result by another route.</li>
+    <li><strong>Self-reinforcing feedback loops.</strong> Model outputs feed back into training data, so the model progressively reinforces its own priors.</li>
+    <li><strong>Consequence asymmetry.</strong> The negative consequences of a false positive are catastrophic and irreversible, while the positive consequences of a true positive are marginal.</li>
+    <li><strong>Power asymmetry.</strong> The deployer of the model is the state, or a party with sufficient legal or economic power to make challenge or appeal unrealistic.</li>
+    <li><strong>No meaningful appeal.</strong> Once the model has spoken, no due process, review, or override is available to the affected person.</li>
+  </ul>
+
+  <h3>The anchor case, the Dutch childcare benefits scandal</h3>
+  <p>The Toeslagenaffaire is the clearest Layer 3 case in the recent AI record. Beginning around 2013, the Dutch Tax and Customs Administration deployed a risk-classification algorithm that used dual nationality, low income, and "non-Dutch sounding names" as input variables for its fraud-detection scoring. The model worked exactly as designed. However, the design was harmful.</p>
+  <p>Approximately 26,000 families were wrongly accused of benefits fraud. Repayment demands ran to tens of thousands of euros. Because the model's output was treated as a finding of "intent or gross negligence," affected parents were locked out of the normal payment-arrangement schemes. Over 1,600 children were removed from their families by youth-protection services. Multiple parents took their own lives. In January 2021, the entire cabinet of Prime Minister Mark Rutte resigned in response.</p>
+  <p>The Toeslagenaffaire is the most important AI case study of the decade because it forces the reader to confront a question no Layer 1 or Layer 2 framework can answer. What do you do when the model performs its function flawlessly, and the function itself is discriminatory? That question is what Layer 3 is for.</p>
+
+  <hr class="section-divider">
+
+  <h2>Case study one, Apple Card</h2>
+
+  <h4>Layer classification</h4>
+  <p><strong>Primary layer:</strong> Layer 2, risk around the model. <strong>Secondary layer:</strong> Layer 1, risk inside the model.</p>
+
+  <h4>Context</h4>
+  <p>In November 2019, a prominent technology entrepreneur used Twitter (now X) to allege that Apple Card, the credit product jointly operated by Apple and Goldman Sachs, had offered him a credit limit twenty times higher than the limit offered to his wife, despite shared assets and her higher credit score. The thread was amplified by other high-profile tech figures reporting similar disparities. Within days, the New York Department of Financial Services (NYDFS) had opened an investigation. Over the following sixteen months, the case became a global reference point for AI bias.</p>
+  <p>In March 2021, NYDFS published its findings. Having reviewed approximately 400,000 New York applicants, it concluded that applications from women and men with similar credit characteristics had generally received similar outcomes, and that no unlawful discrimination under fair-lending law could be established. It did, however, find serious deficiencies in customer service and in the lack of transparency around individual decisions.</p>
+  <p>This gap, between a clean Layer 1 finding and a serious Layer 2 failure, is what makes Apple Card the most instructive early case study in enterprise AI risk.</p>
+
+  <h4>Key risks and impacts</h4>
+
+  <div class="risk-item">
+    <h4>1. Algorithmic opacity and explainability risk</h4>
+    <p>The credit-limit decisions were generated by a model that Goldman Sachs could not adequately explain to customers, to its own frontline support staff, or to regulators. When affected customers asked why their limit differed from their spouse's, they were reportedly told, in effect, "it is the algorithm." The risk here is not that the model produced the wrong answer. The risk is that no human party could defend its output.</p>
+  </div>
+
+  <div class="risk-item">
+    <h4>2. Proxy discrimination and disparate-impact risk</h4>
+    <p>Even when protected attributes are excluded from training data, a model can learn similar patterns through correlated proxies, credit history length, occupation, or the difference between primary and supplemental cardholder status. Women disproportionately hold supplemental cards under a spouse's primary account, which structurally thins their personal credit file. Disparate impact is a legal and ethical risk even without disparate intent.</p>
+  </div>
+
+  <div class="risk-item">
+    <h4>3. Joint-asset and household-context blindness</h4>
+    <p>The algorithm assessed each applicant as an atomized individual, ignoring shared financial reality: joint filings, community property, marital assets. For a product marketed to households, this design choice was a scoping failure. The AI was solving a narrower problem than the product was selling.</p>
+  </div>
+
+  <div class="risk-item">
+    <h4>4. Reputational and brand risk</h4>
+    <p>A single viral thread by a prominent figure triggered a sixteen-month regulatory investigation, sustained coverage in the New York Times, Bloomberg, CNN, and ABC, congressional attention, and a permanent association of the Apple Card brand with algorithmic bias in case-study literature globally. The reputational damage materialized long before, and independently of, any factual finding of bias.</p>
+  </div>
+
+  <div class="risk-item">
+    <h4>5. Regulatory and legal exposure</h4>
+    <p>NYDFS opened its investigation within days of the viral thread. Even with a clean finding, Goldman Sachs incurred legal costs, regulatory burden, mandatory remediation (a credit-improvement program for denied applicants, removal of a six-month appeal waiting period), and ongoing supervisory attention.</p>
+  </div>
+
+  <div class="risk-item">
+    <h4>6. Governance and accountability diffusion</h4>
+    <p>Apple marketed the card. Goldman Sachs underwrote it. A third-party model scored applicants. When the controversy hit, accountability was diffused, and each party's public statements deflected the harder questions to the other. Co-branded AI products multiply the number of parties who can plausibly say "not us."</p>
+  </div>
+
+  <div class="risk-item">
+    <h4>7. Customer service and human-in-the-loop failure</h4>
+    <p>The most damaging quotes from the controversy were not from the algorithm. They were from human agents who told affected customers the algorithm could not be questioned or overridden. The escalation path was broken. This is a deployment risk, not a model risk, and the cheapest of the eight risks to fix.</p>
+  </div>
+
+  <div class="risk-item">
+    <h4>8. Trust erosion in algorithmic lending broadly</h4>
+    <p>The case became a reference point cited by regulators, journalists, and academics far beyond Apple and Goldman. It contributed to broader skepticism about algorithmic credit decisions and helped accelerate calls for AI-specific financial-services regulation in the European Union, the United Kingdom, and the United States.</p>
+  </div>
+
+  <h4>Impact summary</h4>
+  <table class="paper-table">
+    <thead>
+      <tr><th>Impact type</th><th>Materialization</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Financial</td><td>Investigation costs, remediation programme, lost customer acquisition.</td></tr>
+      <tr><td>Reputational</td><td>Sustained negative coverage; Apple Card became shorthand for AI bias.</td></tr>
+      <tr><td>Regulatory</td><td>NYDFS investigation; precedent for algorithmic fair-lending probes.</td></tr>
+      <tr><td>Operational</td><td>Policy changes: appeal window removed, credit-rebuild programme added.</td></tr>
+      <tr><td>Strategic</td><td>Goldman's consumer banking ambitions widely seen as set back.</td></tr>
+      <tr><td>Customer trust</td><td>Erosion of confidence in the "Apple, not a bank" promise.</td></tr>
+    </tbody>
+  </table>
+
+  <h4>Why does this case belong to Layer 2 primarily, not Layer 1</h4>
+  <p>The reflex reading of the Apple Card case is that it was an AI bias story. The full record is more complicated. The regulator's finding was that no unlawful bias existed. The damage was done regardless, because the surrounding governance system, explanation, escalation, override, transparency, and joint accountability, was not fit for a product powered by an opaque model. Apple Card is the case that teaches a governance function to look beyond the model.</p>
+
+  <hr class="section-divider">
+
+  <h2>Case study two, Zillow Offers</h2>
+
+  <h4>Layer classification</h4>
+  <p><strong>Primary layer:</strong> Layer 2, risk around the model. <strong>Secondary layers:</strong> Layer 1 (out-of-distribution performance) and business design.</p>
+
+  <h4>Context</h4>
+  <p>Zillow Offers was the iBuying arm of Zillow Group, launched in 2018. Its premise was that Zillow's Zestimate home-price model, combined with proprietary iBuyer forecasting, could estimate the near-term resale value of individual homes accurately enough to buy them, hold them briefly, refurbish where needed, and resell at a small margin. The model itself was reportedly around 96% accurate nationally, and closer to 99% on homes listed for sale.</p>
+  <p>In November 2021, Zillow announced it was winding down Zillow Offers entirely. The Q3 2021 loss in the iBuying segment alone was approximately $421 million. Total write-downs across the shutdown exceeded $900 million. Zillow's share price dropped roughly 25% in the days that followed and lost approximately 50% of its value over the following three months. Zillow reduced its workforce by approximately 25%, roughly 2,000 employees. The company was left with an inventory of roughly 7,000 homes to liquidate, reportedly in an attempt to recoup approximately $2.8 billion in tied-up capital.</p>
+  <p>Zillow's competitors, Opendoor and Offerpad, operating in the same market with similar technology, adjusted their models as market conditions changed and remained in business. Zillow's failure was therefore not a failure of the AI category. It was a failure of one company's implementation of it.</p>
+
+  <h4>Key risks and impacts</h4>
+
+  <div class="risk-item">
+    <h4>1. Concept drift, the foundational risk</h4>
+    <p>The Zillow model was trained in a market that had been rising for years. When the market cooled in the second half of 2021, the model continued to price homes as though prices were still climbing. This is the textbook example of concept drift, the silent failure mode where a model's accuracy degrades because the world it was trained in no longer exists. Opendoor and Offerpad's models detected the cooling and adjusted. Zillow's did not, or the organization around it did not act on the signal in time.</p>
+  </div>
+
+  <div class="risk-item">
+    <h4>2. The backtest trap</h4>
+    <p>Three years of profitable operation on historical data created leadership confidence that did not survive contact with a regime change. Simulated performance in the past does not imply robust performance in the future, particularly when the future differs structurally from the training window. This is one of the most dangerous patterns in Machine Learning production, and one of the most common reasons for aggressive scaling.</p>
+  </div>
+
+  <div class="risk-item">
+    <h4>3. Adversarial information asymmetry, the lemons problem</h4>
+    <p>This is the most intellectually interesting risk in the Zillow case. When Zillow's offer was too low, the homeowner rejected it. When Zillow's offer was too high, the homeowner accepted. The homeowner knew things the model could not see; the cat smell, the cracked foundation, the freeway being built two blocks over. Even a 96% accurate model becomes catastrophic when the 4% of mispriced offers are precisely the ones that get accepted. Any AI system transacting with humans who hold private information faces a version of this risk.</p>
+  </div>
+
+  <div class="risk-item">
+    <h4>4. Human override in the wrong direction</h4>
+    <p>This is the inverse of the Apple Card override risk. To scale conversion, Zillow executives reportedly adjusted the algorithm's estimates upward. Apple Card had no effective human override. Zillow had override but applied it to bias the model toward business growth rather than accuracy. Both failures are governance failures, in opposite modes. Override layers without independent oversight become tools for breaking the system, not safeguarding it.</p>
+  </div>
+
+  <div class="risk-item">
+    <h4>5. Scale before validation</h4>
+    <p>Zillow acquired more homes in the two quarters preceding the shutdown than in the two years prior. Aggressive scaling magnified small pricing errors into existential losses. The principle: in AI deployment, never scale faster than you can validate. Errors compound at the rate you deploy them.</p>
+  </div>
+
+  <div class="risk-item">
+    <h4>6. Single point of failure, when the model is the business</h4>
+    <p>Apple Card was a credit card whose algorithm was one component. Zillow Offers was a business whose algorithm was the business. There was no manual fallback when the model failed, because the entire operating model assumed the model worked. For any AI-dependent product, the question worth asking early is: what is the manual fallback when the model fails? If the answer is "there isn't one," that is the risk.</p>
+  </div>
+
+  <div class="risk-item">
+    <h4>7. Missing monitoring and guardrails</h4>
+    <p>The operational layer that would have caught the drift, real-time monitoring of prediction error against realized sale prices, was either absent or too slow to act. This is precisely the operational layer that ISO/IEC 42001 Clause 8 (operational planning and control) and Clause 9 (performance evaluation) are designed to address, and it is where most enterprise AI deployments quietly accumulate risk between incidents.</p>
+  </div>
+
+  <div class="risk-item">
+    <h4>8. Capital and liquidity exposure</h4>
+    <p>AI failures in transactional or operational systems convert directly into capital impairment. For any organization deploying AI in decisions that involve money, the model risk needs to sit on the enterprise risk register, not just the data science backlog.</p>
+  </div>
+
+  <h4>Impact summary</h4>
+  <table class="paper-table">
+    <thead>
+      <tr><th>Impact type</th><th>Materialization</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Financial</td><td>$421M loss in Q3 2021; $900M+ total write-downs; ~$2.8B in inventory to liquidate.</td></tr>
+      <tr><td>Equity</td><td>~25% share price drop in days; ~50% decline over three months.</td></tr>
+      <tr><td>Workforce</td><td>~2,000 layoffs, approximately 25% of company headcount.</td></tr>
+      <tr><td>Strategic</td><td>Entire iBuying business unit shut down; return to advertising and search core.</td></tr>
+      <tr><td>Reputational</td><td>Zillow became the canonical case for AI model failure in a business context.</td></tr>
+      <tr><td>Operational</td><td>Forced liquidation of 7,000 homes; market distortion in Phoenix, Las Vegas, Atlanta.</td></tr>
+      <tr><td>Industry</td><td>Reinforced caution among competitors; skepticism about algorithmic real estate at scale.</td></tr>
+    </tbody>
+  </table>
+
+  <h4>Why does this case belong to Layer 2</h4>
+  <p>Zillow is the layer where AI ops now live. The model was not the primary failure. The envelope was. Concept drift went undetected. Override went in the wrong direction. Scale ran ahead of validation. Monitoring was insufficient. And the business had no fallback when the model, inevitably, encountered conditions it had not been trained for. Zillow is the case that teaches a governance function to invest in the operational layer, not only the modelling layer.</p>
+
+  <hr class="section-divider">
+
+  <h2>Case study three, the Dutch childcare benefits scandal</h2>
+
+  <h4>Layer classification</h4>
+  <p><strong>Primary layer:</strong> Layer 3, risk in the design itself. <strong>Secondary layers:</strong> Layer 1 (biased features and biased training data) and Layer 2 (no meaningful monitoring or appeal).</p>
+
+  <h4>Context</h4>
+  <p>The Toeslagenaffaire ("benefits affair") is a political and human-rights scandal in the Netherlands that involved false allegations of welfare fraud made by the Dutch Tax and Customs Administration (Belastingdienst) against tens of thousands of families claiming childcare benefits between 2005 and 2019.</p>
+  <p>Approximately 26,000 parents were wrongly accused of making fraudulent benefit claims and were ordered to repay years of allowances in full, in amounts ranging from tens of thousands to over one hundred thousand euros per family. Because they were labelled as guilty of "intent or gross negligence," affected families were locked out of standard payment-arrangement schemes, and lost eligibility for other allowances (housing, healthcare). Many were driven into bankruptcy. Some lost their homes. More than 1,600 children were removed from their families by youth-protection services. Multiple parents died by suicide.</p>
+  <p>On 15 January 2021, the entire cabinet of Prime Minister Mark Rutte resigned in response to the 2020 parliamentary report titled Ongekend Onrecht ("Unprecedented Injustice"). The Dutch Data Protection Authority (Autoriteit Persoonsgegevens) fined the tax administration €3.7 million for unlawful processing of nationality data. The case is now the foundational precedent for the EU AI Act's treatment of high-risk public-sector systems and, in particular, for Article 27 (Fundamental Rights Impact Assessment), which enters into force on 2 August 2026.</p>
+
+  <h4>Key risks and impacts</h4>
+
+  <div class="risk-item">
+    <h4>1. Protected attributes used directly as model features</h4>
+    <p>The most basic principle of non-discriminatory machine learning is that protected attributes, nationality, ethnicity, religion, should not be inputs into a decision that materially affects a person. The Belastingdienst encoded the opposite as policy. Dual nationality, low income, and whether an applicant's name appeared "non-Dutch" were used as risk indicators. This was not an emergent bias that the model learned from data. It was an architectural choice. The discrimination was, literally, a feature.</p>
+  </div>
+
+  <div class="risk-item">
+    <h4>2. Proxy discrimination layered on top of direct discrimination</h4>
+    <p>Even without the nationality field, the model would have discriminated against surname patterns, which are textbook proxies for ethnicity and national origin. The system was therefore discriminatory at two layers simultaneously, the explicit and the implicit. Removing one leaves the other doing the same work.</p>
+  </div>
+
+  <div class="risk-item">
+    <h4>3. Self-reinforcing feedback loops, the blacklist problem</h4>
+    <p>The Belastingdienst also maintained a blacklist known as the Fraude Signalering Voorziening (FSV). Once an individual appeared on the list, their risk score automatically increased, and future audits became more likely. Appearance on the list also damaged applicants' credibility for other benefits and for private financial services. The system was structured so that being flagged made being flagged again more likely. This is the single most dangerous structural pattern in algorithmic governance, and it is more common in production systems than most organizations recognize.</p>
+  </div>
+
+  <div class="risk-item">
+    <h4>4. Biased training data through institutional practices</h4>
+    <p>The model did not only encode discrimination, but it was also fed by it. Investigators disproportionately audited foreign residents (in one reported case, auditing all 6,000 Ghanaian residents in the Netherlands after receiving a tip about roughly one hundred individuals). This raised the proportion of foreign residents in the fraud-positive data, which trained the model to flag foreign residents more often, which led to more audits. A clean algorithm trained on biased operational data is still a biased algorithm.</p>
+  </div>
+
+  <div class="risk-item">
+    <h4>5. No meaningful appeal, no due process</h4>
+    <p>Once flagged, an applicant was labelled with "intent or gross negligence." This label removed the normal payment-arrangement schemes and effectively stripped due process. Even trivial errors like a missing signature produced permanent, irremovable labels. The algorithm's output was treated as a finding, not a flag. Due process collapsed at the point of the model output.</p>
+  </div>
+
+  <div class="risk-item">
+    <h4>6. Disproportionate, irreversible, cross-system consequences</h4>
+    <p>The harm was not contained. It cascaded. Victims lost access to housing allowances, healthcare allowances, and, because the model's outputs were shared with public and private bodies, in more than 1,600 cases, custody of children was lost. In any system where AI outputs are shared across institutional boundaries, second-order harms can dwarf the first-order decision. This is the most important cross-cutting lesson of the case for corporate AI deployments as well as government ones.</p>
+  </div>
+
+  <div class="risk-item">
+    <h4>7. The state-power amplifier</h4>
+    <p>Apple Card could lower the credit limit. Zillow could misprice a house. A state algorithm can take a child. Sovereign AI deployments carry powers no commercial AI carries. The risk classification of an AI system should therefore be calibrated to the consequences of its outputs, not the sophistication of its model. This is precisely the logic the EU AI Act now codifies for "high-risk" public-sector systems, and Article 27 requires a Fundamental Rights Impact Assessment before deployment.</p>
+  </div>
+
+  <div class="risk-item">
+    <h4>8. The accountability vacuum, until the political collapse</h4>
+    <p>The scandal ran for approximately fifteen years before consequences arrived. Only after a 2019 parliamentary inquiry (the Donner Commission), the 2020 Ongekend Onrecht report, and the resignation of an entire cabinet did the system face meaningful reform. The DPA's €3.7 million fine is approximately one one-thousandth of Zillow's write-down, for harm that is morally and humanly incomparable. Accountability mechanisms for algorithmic harm in public-sector systems remain badly underdeveloped relative to the scale of damage those systems can inflict.</p>
+  </div>
+
+  <h4>Impact summary</h4>
+  <table class="paper-table">
+    <thead>
+      <tr><th>Impact type</th><th>Materialization</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Human</td><td>~26,000 families wrongly accused; 1,600+ children removed from families; multiple parental suicides.</td></tr>
+      <tr><td>Financial</td><td>Individual repayments of €20,000 to €100,000+; bankruptcies, home loss, lockout from other benefits and banking.</td></tr>
+      <tr><td>Political</td><td>Resignation of the entire Rutte cabinet in January 2021.</td></tr>
+      <tr><td>Regulatory</td><td>Foundational precedent for EU AI Act treatment of high-risk public-sector AI; €3.7M DPA fine; ongoing compensation programme.</td></tr>
+      <tr><td>Legal</td><td>Multiple criminal complaints; EU-level parliamentary questions; comparisons to Australia's Robodebt scandal.</td></tr>
+      <tr><td>Institutional</td><td>Permanent damage to credibility of Belastingdienst and Dutch civil-service AI initiatives.</td></tr>
+      <tr><td>Disproportionate impact</td><td>Caribbean Dutch, Ghanaian, Moroccan, Turkish, and other dual-nationality communities bore the concentrated harm.</td></tr>
+    </tbody>
+  </table>
+
+  <h4>Why is this case the definitive Layer 3 case study</h4>
+  <p>The Toeslagenaffaire is the most important AI case study of the past decade because it forces the reader to accept something the Layer 1 and Layer 2 discussions cannot resolve. What if the model works exactly as designed, and the design is the harm? A Layer 1 audit would have found the model was functioning to specification. A Layer 2 audit would have found the operational system operating within its parameters. Both audits would have missed the case. Only a Layer 3 review, asking whether the model should exist in this form, with these features, deployed by this actor, against this population, could have caught it.</p>
+  <p>Layer 3 is where compliance frameworks fall silent, because Layer 3 is not a technical question. It is a values and power question. And it is where the largest AI-related harms of the last decade have actually happened.</p>
+
+  <hr class="section-divider">
+
+  <h2>The AI Risk Stack, applied to ISO/IEC 42001 and the EU AI Act</h2>
+  <p>The AI Risk Stack framework is not intended as a replacement for the two governance instruments that most enterprise and public-sector organizations will actually be measured against over the next five years, ISO/IEC 42001:2023, the international standard for AI management systems, and the EU AI Act, in force from August 2024 and being phased in through 2026 and 2027. It is intended as a way of navigating them.</p>
+  <p>Each of the three layers of the AI Risk Stack maps to a specific set of clauses in ISO/IEC 42001 and a specific set of articles in the EU AI Act. The mapping below is not exhaustive, but it is sufficient to plan a first-cut assessment against either instrument, or to identify which of the two instruments to lean on for a given risk category.</p>
+
+  <h3>Layer 1, risk inside the model</h3>
+  <p>The instruments primarily engage Layer 1 through requirements on data quality, bias detection, transparency, and human oversight of individual decisions.</p>
+  <table class="paper-table">
+    <thead>
+      <tr><th>Instrument</th><th>Relevant clauses / articles</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>ISO/IEC 42001</td><td>Clause 6.1 (AI risk assessment), Clause 8.2 (operational AI risk assessment), Annex A controls on transparency and explainability.</td></tr>
+      <tr><td>EU AI Act</td><td>Article 10 (data and data governance), Article 13 (transparency and provision of information to deployers), Article 14 (human oversight), Article 15 (accuracy, robustness, cybersecurity).</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Layer 2, risk around the model</h3>
+  <p>The instruments engage Layer 2 through operational planning, monitoring, override mechanisms, and post-market surveillance. This is the layer where compliance work is currently maturing fastest, and where most enterprise AI programmes are investing their governance budgets.</p>
+  <table class="paper-table">
+    <thead>
+      <tr><th>Instrument</th><th>Relevant clauses / articles</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>ISO/IEC 42001</td><td>Clause 8.1 (operational planning and control), Clause 9.1 (monitoring, measurement, analysis and evaluation), Clause 9.2 (internal audit), Clause 10 (improvement).</td></tr>
+      <tr><td>EU AI Act</td><td>Article 15 (accuracy, robustness, cybersecurity), Article 17 (quality management system), Article 26 (obligations of deployers of high-risk AI systems), Article 72 (post-market monitoring).</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Layer 3, risk in the design itself</h3>
+  <p>This is the layer where the two instruments become the most consequential, and where the most important compliance date on the horizon sits.</p>
+  <table class="paper-table">
+    <thead>
+      <tr><th>Instrument</th><th>Relevant clauses / articles</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>ISO/IEC 42001</td><td>Clause 4 (context of the organisation), Clause 5 (leadership and AI policy), Clause 6.1.4 (AI system impact assessment), Clause 8.4 (AI system impact assessment during operation).</td></tr>
+      <tr><td>EU AI Act</td><td>Article 5 (prohibited AI practices), Article 6 and Annex III (high-risk classification, including public benefit determination systems), Article 27 (Fundamental Rights Impact Assessment, in force 2 August 2026).</td></tr>
+    </tbody>
+  </table>
+
+  <div class="article-27">
+    <p class="article-27-label">Article 27 · In force 2 August 2026</p>
+    <p>If your organization deploys a high-risk AI system, you have until 2 August 2026 to complete a Fundamental Rights Impact Assessment.</p>
+  </div>
+
+  <p>Article 27 of the EU AI Act, which introduces the Fundamental Rights Impact Assessment (FRIA), is the most direct legislative response to the Toeslagenaffaire and to the wider recognition that Layer 3 risks cannot be controlled by Layer 1 or Layer 2 mechanisms alone. It applies to public bodies and to private entities providing public services that deploy high-risk AI systems as defined in Article 6(2), and also to deployers of high-risk AI systems used for creditworthiness evaluation or credit scoring (except for financial-fraud detection) and for risk assessment and pricing in life and health insurance.</p>
+  <p>The FRIA is described in Article 27 as consisting of a description of the deployer's processes, the timeframes and frequency of the system's use, the categories of persons or groups likely to be affected, the specific risks of harm, the human oversight measures in place, and the measures to be taken in the event that those risks materialize, including internal governance and complaint mechanisms.</p>
+  <p>The FRIA obligation is a Layer 3 instrument. It requires the deployer to reason about the design of the system in a way that Layer 1 and Layer 2 requirements do not. It is also the first legally binding Layer 3 obligation of its kind in any major jurisdiction. Enterprises and public bodies that treat it as a paperwork exercise will find themselves in the position the Belastingdienst found itself in a decade ago. Those that treat it as a genuine design review will find that most of the work required has always been necessary and has simply never been formally demanded.</p>
+
+  <hr class="section-divider">
+
+  <h2>Three questions every AI committee should ask</h2>
+  <p>The value of a framework is that it produces good questions. The AI Risk Stack produces three, one for each layer. Any AI committee, ethics function, or product team can bring these questions into a design review, a launch review, or a post-mortem. They are worded to be answerable without recourse to specialist vocabulary.</p>
+
+  <h3>Layer 1 question, the defensibility question</h3>
+  <div class="q-callout">If our model outputs are questioned, can we defend them?</div>
+  <p>This is the question Apple Card was unable to answer in 2019. Not "is the model biased," which is the question the field usually asks, and which is often unanswerable in the moment. The more useful question is whether the organization has the artefacts, the data, the documentation, the decision logic, the audit trail, to defend a specific output when a specific customer, regulator, or journalist asks about it. If those artefacts do not exist at the point of deployment, they cannot be manufactured after the fact.</p>
+
+  <h3>Layer 2 question, the visibility question</h3>
+  <div class="q-callout">If our model starts drifting, would we know?</div>
+  <p>This is the question Zillow was unable to answer in 2021. The question is not whether the model is monitored in some abstract sense. It is whether the organization has an early-warning system with a clear threshold and a clear owner who acts on the signal. Most drift-monitoring programmes look adequate in a slide deck and inadequate in a stress test. A useful sub-question: what would the signal look like a week before the failure becomes visible externally, and does anyone in the organization see that signal?</p>
+
+  <h3>Layer 3 question, the design question</h3>
+  <div class="q-callout">If our model works exactly as designed, would we still be comfortable with the outcomes?</div>
+  <p>This is the question the Dutch tax administration was structurally unable to ask itself for fifteen years. It is the question the FRIA obligation now formally requires. And it is the question that most AI governance frameworks in current use do not force. If the answer is anything less than an unqualified yes, the design needs to change, or the deployment should not proceed. This is a values and power conversation, not a technical one. It cannot be delegated to the model developers alone.</p>
+
+  <hr class="section-divider">
+
+  <h2>Conclusion</h2>
+  <p>The AI ethics field's early years produced rich literature on Layer 1 risks, on bias, fairness, and explainability. Those risks are real, and Layer 1 remains a necessary starting point. But the three cases examined in this paper suggest that the AI risks with the largest realized consequences over the last decade have not lived in Layer 1. They have lived in Layer 2 and Layer 3.</p>
+  <p>Apple Card was cleared of unlawful discrimination and became a case study anyway, because Layer 2 was broken. Zillow's model was 96% accurate and the business failed anyway, because Layer 2 was not resilient to concept drift. The Dutch tax algorithm worked exactly as designed and destroyed 26,000 families anyway, because Layer 3 was never asked.</p>
+  <p>The regulatory environment is converging to the same conclusion. ISO/IEC 42001 explicitly separates AI risk assessment (Clause 6.1) from AI system impact assessment (Clause 6.1.4 and 8.4), which is a two-instrument way of saying the model risk and the design risk are not the same risk. The EU AI Act separates Article 15 (accuracy and robustness, essentially Layer 2) from Article 27 (Fundamental Rights Impact Assessment, essentially Layer 3), and treats the two as legally distinct obligations. The regulatory instruments are moving in this direction because the incident record has forced them to.</p>
+  <p>The practical implication is that AI governance functions built around Layer 1 alone are already behind the risk landscape they are meant to govern. Those built around Layers 1 and 2 are current. Those that add Layer 3, the discipline of asking whether the model should exist in this form at all, are the ones most likely to prevent the next case that ends up as case study four in someone else's paper.</p>
+
+  <blockquote>The layers we are least prepared for are the ones most likely to hurt us.</blockquote>
+
+  <div class="author-bio">
+    <h3>About the author</h3>
+    <p>Jacintah Mumbe Kimeu (JMK) is a business analyst working on AI-enabled sales operations at Samsung Gulf Electronics in Dubai, where she sits on the internal AI Committee. She writes on the intersection of AI governance, sales operations, and enterprise systems for the MENA region.</p>
+    <p>Her professional background spans forecast accuracy, automation, and analytical infrastructure, and her ongoing work is focused on the emerging practice of AI risk and governance in enterprise settings. She holds a BSc in Financial Engineering from JKUAT, IBM Data Science, AI Foundations for Business Professionals from Saïd Business School, and Google Data Analytics certifications, and is pursuing the CCBA and PECB ISO/IEC 42001 credentials.</p>
+    <p>Find her on <a href="https://www.linkedin.com/in/jacintah-kimeu/" target="_blank" rel="noopener">LinkedIn</a>.</p>
+  </div>
+
+</article>
+
+<footer>
+  <p>© 2026 Jacintah Mumbe Kimeu · Dubai & Nairobi</p>
+  <div class="footer-links">
+    <a href="./index.html">Portfolio</a>
+    <a href="mailto:mumbekimeu183@gmail.com">Email</a>
+    <a href="https://www.linkedin.com/in/jacintah-kimeu/" target="_blank" rel="noopener">LinkedIn</a>
+  </div>
+</footer>
+
+</body>
+</html>
